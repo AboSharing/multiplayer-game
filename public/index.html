@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YT Multiplayer Game</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>YT Multiplayer Game</h1>
+
+    <div class="nickname-section">
+      <input type="text" id="nickname" placeholder="Dein Nickname">
+      <button id="start-btn">Spiel starten</button>
+    </div>
+
+    <div class="leaderboard-section">
+      <h2>Leaderboard</h2>
+      <ul id="leaderboard">
+        <!-- Spieler werden hier dynamisch eingefügt -->
+      </ul>
+    </div>
+
+    <div class="game-section">
+      <h2>Spielbereich</h2>
+      <div id="game-area">
+        <!-- Hier kommt das Spiel -->
+      </div>
+      <button id="test-btn">Test Score +10</button>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
