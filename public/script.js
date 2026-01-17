@@ -1,31 +1,35 @@
-const socket = io(); // Socket.io Verbindung
-const startBtn = document.getElementById('start-btn');
-const testBtn = document.getElementById('test-btn');
+const socket = io();
+const joinBtn = document.getElementById('joinBtn');
 const nicknameInput = document.getElementById('nickname');
-const leaderboardEl = document.getElementById('leaderboard');
+const leaderboardDiv = document.getElementById('leaderboard');
+const gameButtons = document.querySelectorAll('.game-btn');
 
 let nickname = '';
 
-// Nickname festlegen
-startBtn.addEventListener('click', () => {
-  if(nicknameInput.value.trim() === '') return alert('Bitte Nickname eingeben!');
-  nickname = nicknameInput.value.trim();
+// Lobby beitreten
+joinBtn.addEventListener('click', () => {
+  if(!nicknameInput.value) return alert("Bitte Nickname eingeben!");
+  nickname = nicknameInput.value;
   socket.emit('join', nickname);
-  alert(`Nickname gesetzt: ${nickname}`);
 });
 
-// Testbutton: +10 Punkte
-testBtn.addEventListener('click', () => {
-  if(!nickname) return alert('Setze zuerst deinen Nickname!');
-  socket.emit('score', {nickname, points: 10});
+// Spiel auswählen
+gameButtons.forEach(btn => {
+  btn.addEventListener('click', () => {
+    if(!nickname) return alert("Bitte zuerst Nickname eingeben!");
+    const game = btn.dataset.game;
+    if(game === "comingsoon") return alert("Dieses Spiel kommt bald!");
+    window.location.href = `/games/${game}.html?nickname=${nickname}`;
+  });
 });
 
-// Leaderboard live aktualisieren
+// Leaderboard aktualisieren
 socket.on('leaderboard', data => {
-  leaderboardEl.innerHTML = '';
-  Object.keys(data).forEach(player => {
-    const li = document.createElement('li');
-    li.textContent = `${player}: ${data[player].score} Punkte`;
-    leaderboardEl.appendChild(li);
+  leaderboardDiv.innerHTML = '';
+  const sorted = Object.entries(data).sort((a,b) => b[1].totalScore - a[1].totalScore);
+  sorted.slice(0,10).forEach(([name, info], i) => {
+    const div = document.createElement('div');
+    div.textContent = `${i+1}. ${name}: ${info.totalScore} Punkte`;
+    leaderboardDiv.appendChild(div);
   });
 });
