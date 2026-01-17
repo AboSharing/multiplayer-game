@@ -7,4 +7,7 @@ app.get("/", (req, res) => {
   res.send("Server läuft ✅");
 });
 
-app.listen(process.env.PORT || 3000);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log("Server gestartet auf Port", PORT);
+});
