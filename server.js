@@ -35,12 +35,7 @@ io.on('connection', (socket) => {
         }
 
         // Spieler hinzufügen
-        activePlayers[nickname] = { socketId: socket.id, joinedAt: Date.now() };
-
-        // Admin markieren
-        const displayName = (nickname === ADMIN_NAME) 
-            ? `<span class="admin">${nickname} (Admin)</span>` 
-            : nickname;
+        activePlayers[nickname] = { socketId: socket.id, joinedAt: Date.now(), score: 0 };
 
         // Lobby-Update senden
         io.emit('lobby-update', { 
@@ -69,6 +64,19 @@ io.on('connection', (socket) => {
                 name === ADMIN_NAME ? `<span class="admin">${name} (Admin)</span>` : name
             )
         });
+    });
+
+    // Score aktualisieren (für Spiele später)
+    socket.on('update-score', ({nickname, game, points}) => {
+        if(!leaderboard[nickname]) leaderboard[nickname] = { totalScore: 0, games: {} };
+        leaderboard[nickname].games[game] = points;
+        leaderboard[nickname].totalScore = Object.values(leaderboard[nickname].games).reduce((a,b)=>a+b,0);
+
+        // Leaderboard speichern
+        fs.writeFileSync(leaderboardFile, JSON.stringify(leaderboard, null, 2));
+
+        // Leaderboard an alle senden
+        io.emit('leaderboard', leaderboard);
     });
 });
 
